@@ -1,0 +1,2 @@
+parameters:
+    davidiq.multitopicicons.tables.topic_icons: '%core.table_prefix%topic_icons'

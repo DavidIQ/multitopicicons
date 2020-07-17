@@ -1,0 +1,16 @@
+imports:
+    - { resource: parameters.yml }
+
+services:
+    davidiq.multitopicicons.service:
+        class: davidiq\multitopicicons\service
+        arguments:
+            - '@user'
+            - '%davidiq.multitopicicons.tables.topic_icons%'
+
+    davidiq.multitopicicons.listener:
+        class: davidiq\multitopicicons\event\main_listener
+        arguments:
+            - '@language'
+        tags:
+            - { name: event.listener }
