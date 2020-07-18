@@ -1,11 +1,12 @@
 {% if S_SHOW_MULTI_TOPIC_ICONS %}
 <dl>
-	<dt><label for="icon">{{ lang('ICONS') ~ lang('COLON') }}</label></dt>
+	<dt><label>{{ lang('ICONS') ~ lang('COLON') }}</label></dt>
 	<dd>
 		{% EVENT posting_editor_topic_icons_prepend %}
 
-		<label for="icon"><input type="radio" name="icon" id="icon" value="0" checked="checked" tabindex="1" /> {{ lang('NO_TOPIC_ICON') }}</label>
-		{% for icon in topic_icon %}<label for="icon-{{ icon.ICON_ID }}"><input type="checkbox" name="icon" id="icon-{{ icon.ICON_ID }}" value="{{ icon.ICON_ID }}" {{ icon.S_ICON_CHECKED }} tabindex="1" /><img src="{{ icon.ICON_IMG }}" width="{{ icon.ICON_WIDTH }}" height="{{ icon.ICON_HEIGHT }}" alt="{{ icon.ICON_ALT }}" title="{{ icon.ICON_ALT }}" /></label>{% endfor %}
+		{% for icon in topic_icons %}
+		<label for="topic_icon-{{ icon.ICON_ID }}"><input type="checkbox" name="topic_icons[]" id="topic_icon-{{ icon.ICON_ID }}" value="{{ icon.ICON_ID }}"{% if icon.S_CHECKED %} checked="checked"{% endif %} tabindex="1" /><img src="{{ icon.ICON_IMG }}" width="{{ icon.ICON_WIDTH }}" height="{{ icon.ICON_HEIGHT }}" alt="{{ icon.ICON_ALT }}" title="{{ icon.ICON_ALT }}" /></label>
+		{% endfor %}
 
 		{% EVENT posting_editor_topic_icons_append %}
 	</dd>

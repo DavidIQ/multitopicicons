@@ -12,5 +12,12 @@ services:
         class: davidiq\multitopicicons\event\main_listener
         arguments:
             - '@language'
+            - '@template'
+            - '@dbal.conn'
+            - '@request'
+            - '@cache'
+            - '@config'
+            - '%core.root_path%'
+            - '%davidiq.multitopicicons.tables.topic_icons%'
         tags:
             - { name: event.listener }

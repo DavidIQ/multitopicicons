@@ -35,7 +35,7 @@ class install_schema extends \phpbb\db\migration\migration
 				$this->table_prefix . 'topic_icons'	=> [
 					'COLUMNS'		=> [
 						'topic_id'			=> ['UINT', 0],
-						'icons_id'			=> ['UINT', 0],
+						'icon_id'			=> ['UINT', 0],
 					],
                     'KEYS'          => [
                         't_id'              => ['INDEX', 'topic_id'],
