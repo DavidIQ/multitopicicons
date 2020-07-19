@@ -5,7 +5,11 @@ services:
     davidiq.multitopicicons.service:
         class: davidiq\multitopicicons\service
         arguments:
-            - '@user'
+            - '@cache'
+            - '@config'
+            - '@template'
+            - '@dbal.conn'
+            - '%core.root_path%'
             - '%davidiq.multitopicicons.tables.topic_icons%'
 
     davidiq.multitopicicons.listener:
@@ -13,11 +17,8 @@ services:
         arguments:
             - '@language'
             - '@template'
-            - '@dbal.conn'
             - '@request'
-            - '@cache'
-            - '@config'
-            - '%core.root_path%'
+            - '@davidiq.multitopicicons.service'
             - '%davidiq.multitopicicons.tables.topic_icons%'
         tags:
             - { name: event.listener }

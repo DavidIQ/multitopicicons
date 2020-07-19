@@ -1,0 +1,7 @@
+{% if postrow.S_FIRST_ROW and topic_icons %}
+<div class="multi-topic-icons">
+{% for icon in topic_icons %}
+{% if icon.S_CHECKED %}<img src="{{ icon.ICON_IMG }}" width="{{ icon.ICON_WIDTH }}" height="{{ icon.ICON_HEIGHT }}" alt="{{ icon.ICON_ALT }}" title="{{ icon.ICON_ALT }}"> {% endif %}
+{% endfor %}
+</div>
+{% endif %}

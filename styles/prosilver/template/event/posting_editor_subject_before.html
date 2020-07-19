@@ -5,7 +5,7 @@
 		{% EVENT posting_editor_topic_icons_prepend %}
 
 		{% for icon in topic_icons %}
-		<label for="topic_icon-{{ icon.ICON_ID }}"><input type="checkbox" name="topic_icons[]" id="topic_icon-{{ icon.ICON_ID }}" value="{{ icon.ICON_ID }}"{% if icon.S_CHECKED %} checked="checked"{% endif %} tabindex="1" /><img src="{{ icon.ICON_IMG }}" width="{{ icon.ICON_WIDTH }}" height="{{ icon.ICON_HEIGHT }}" alt="{{ icon.ICON_ALT }}" title="{{ icon.ICON_ALT }}" /></label>
+		<label for="topic_icon-{{ icon.ICON_ID }}"><input type="checkbox" name="topic_icons[]" id="topic_icon-{{ icon.ICON_ID }}" value="{{ icon.ICON_ID }}"{% if icon.S_CHECKED %} checked="checked"{% endif %} tabindex="1" /><img src="{{ icon.ICON_IMG }}" width="{{ icon.ICON_WIDTH }}" height="{{ icon.ICON_HEIGHT }}" alt="{{ icon.ICON_ALT }}" title="{{ icon.ICON_ALT }}"></label>
 		{% endfor %}
 
 		{% EVENT posting_editor_topic_icons_append %}
