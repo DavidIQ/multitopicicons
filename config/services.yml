@@ -1,6 +1,3 @@
-imports:
-    - { resource: parameters.yml }
-
 services:
     davidiq.multitopicicons.service:
         class: davidiq\multitopicicons\service
@@ -10,7 +7,7 @@ services:
             - '@template'
             - '@dbal.conn'
             - '%core.root_path%'
-            - '%davidiq.multitopicicons.tables.topic_icons%'
+            - '%core.table_prefix%topic_icons'
 
     davidiq.multitopicicons.listener:
         class: davidiq\multitopicicons\event\main_listener
@@ -19,6 +16,5 @@ services:
             - '@template'
             - '@request'
             - '@davidiq.multitopicicons.service'
-            - '%davidiq.multitopicicons.tables.topic_icons%'
         tags:
             - { name: event.listener }

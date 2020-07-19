@@ -28,6 +28,8 @@ class main_listener implements EventSubscriberInterface
             'core.posting_modify_submission_errors' => 'check_max_limit',
             'core.submit_post_end' => 'save_topic_icons',
             'core.viewtopic_modify_post_row' => 'add_topic_icons',
+            'core.viewforum_modify_topics_data' => 'add_topic_icons_to_topic_list_data',
+            'core.viewforum_modify_topicrow' => 'add_topic_icons_to_topic_list',
         ];
     }
 
@@ -37,14 +39,14 @@ class main_listener implements EventSubscriberInterface
     /* @var \phpbb\template\template */
     protected $template;
 
-    /* @var string */
-    protected $topic_icons_table;
-
     /* @var \phpbb\request\request */
     protected $request;
 
     /* @var \davidiq\multitopicicons\service */
     protected $service;
+
+    /* @var array */
+    private $forum_topic_icons;
 
     /**
      * Constructor
@@ -53,12 +55,10 @@ class main_listener implements EventSubscriberInterface
      * @param \phpbb\template\template $template Template object
      * @param \phpbb\request\request $request Request object
      * @param \davidiq\multitopicicons\service $service Multi topic icons service
-     * @param string $topic_icons_table Topic icons table name
      */
-    public function __construct(\phpbb\language\language $language, \phpbb\template\template $template, \phpbb\request\request $request, \davidiq\multitopicicons\service $service, string $topic_icons_table)
+    public function __construct(\phpbb\language\language $language, \phpbb\template\template $template, \phpbb\request\request $request, \davidiq\multitopicicons\service $service)
     {
         $this->language = $language;
-        $this->topic_icons_table = $topic_icons_table;
         $this->request = $request;
         $this->template = $template;
         $this->service = $service;
@@ -119,7 +119,7 @@ class main_listener implements EventSubscriberInterface
     }
 
     /**
-     * Display topic icons in viewtopic
+     * Add topic icons in viewtopic
      *
      * @param \phpbb\event\data $event Event object
      */
@@ -133,6 +133,58 @@ class main_listener implements EventSubscriberInterface
             $row = $event['row'];
             $topic_data = $event['topic_data'];
             $this->service->assign_icons_to_template($topic_data['topic_id'], $row['icon_id']);
+        }
+    }
+
+    /**
+     * Add topic icons to topics list data
+     *
+     * @param \phpbb\event\data $event Event object
+     */
+    public function add_topic_icons_to_topic_list_data($event)
+    {
+        $rowset = $event['rowset'];
+        $topic_list = $event['topic_list'];
+        $topics_icons = $this->service->get_topics_icons($topic_list);
+        foreach ($topic_list as $topic_id)
+        {
+            $icon_id = $rowset[$topic_id]['icon_id'];
+            $topic_icons = array_filter($topics_icons, function ($icon) use ($topic_id)
+            {
+                return $icon['topic_id'] == $topic_id;
+            });
+            if (!empty($topic_icons))
+            {
+                $topic_icons = array_map(function($icon) { return $icon['icon_id']; }, $topic_icons);
+                if (!in_array($icon_id, $topic_icons))
+                {
+                    $topic_icons = array_merge($topic_icons, [$icon_id]);
+                }
+                $rowset[$topic_id]['topic_icons'] = $topic_icons;
+            }
+        }
+        $event['rowset'] = $rowset;
+    }
+
+    /**
+     * Adds topic icons to the rendered topics list
+     *
+     * @param $event
+     */
+    public function add_topic_icons_to_topic_list($event)
+    {
+        $row = $event['row'];
+        $topic_row = $event['topic_row'];
+        $topic_icons = $row['topic_icons'];
+        if (!empty($topic_icons))
+        {
+            $topic_row['TOPIC_ICON_IMG'] = false;
+
+            $icons_template_data = $this->service->assign_icons_to_template($row['topic_id'], $row['topic_id'], $topic_icons, true);
+            $icons_template_data = array_filter($icons_template_data, function($data) { return $data['S_CHECKED']; });
+            $topic_row['TOPIC_ICONS'] = $icons_template_data;
+
+            $event['topic_row'] = $topic_row;
         }
     }
 }

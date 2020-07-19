@@ -1,0 +1,7 @@
+{% if topicrow.TOPIC_ICONS %}
+<div class="multi-topic-icons-list">
+{% for icon in topicrow.TOPIC_ICONS %}
+<img src="{{ icon.ICON_IMG }}" width="{{ icon.ICON_WIDTH }}" height="{{ icon.ICON_HEIGHT }}" alt="{{ icon.ICON_ALT }}" title="{{ icon.ICON_ALT }}">
+{% endfor %}
+</div>
+{% endif %}
