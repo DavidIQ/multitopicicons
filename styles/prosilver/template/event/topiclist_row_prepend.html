@@ -1,7 +1,7 @@
 {% if topicrow.TOPIC_ICONS %}
-<div class="multi-topic-icons-list">
+<a href="{% if topicrow.S_UNREAD_TOPIC and not S_IS_BOT %}{{ topicrow.U_NEWEST_POST }}{% else %}{{ topicrow.U_VIEW_TOPIC }}{% endif %}">
 {% for icon in topicrow.TOPIC_ICONS %}
 <img src="{{ icon.ICON_IMG }}" width="{{ icon.ICON_WIDTH }}" height="{{ icon.ICON_HEIGHT }}" alt="{{ icon.ICON_ALT }}" title="{{ icon.ICON_ALT }}">
 {% endfor %}
-</div>
+</a>
 {% endif %}
