@@ -26,7 +26,7 @@ class main_listener implements EventSubscriberInterface
         return [
             'core.posting_modify_template_vars' => 'load_topic_icons',
             'core.posting_modify_submission_errors' => 'check_max_limit',
-            'core.submit_post_end' => 'save_topic_icons',
+            'core.posting_modify_submit_post_after' => 'save_topic_icons',
             'core.viewtopic_modify_post_row' => 'add_topic_icons',
             'core.viewforum_modify_topics_data' => 'add_topic_icons_to_topic_list_data',
             'core.viewforum_modify_topicrow' => 'add_topic_icons_to_topic_list',
@@ -125,8 +125,12 @@ class main_listener implements EventSubscriberInterface
     public function save_topic_icons($event)
     {
         $topic_id = (int)$event['data']['topic_id'];
-        $topic_icons = $this->request->variable('topic_icons', [0]);
-        $this->service->save_topic_icons($topic_id, $topic_icons);
+        $s_new_message = $this->template->retrieve_var('S_NEW_MESSAGE');
+        if ($s_new_message && $event['post_data']['enable_icons'])
+        {
+            $topic_icons = $this->request->variable('topic_icons', [0]);
+            $this->service->save_topic_icons($topic_id, $topic_icons);
+        }
     }
 
     /**
@@ -193,7 +197,7 @@ class main_listener implements EventSubscriberInterface
         if (!empty($topic_icons))
         {
             $topic_row['TOPIC_ICON_IMG'] = false;
-            $icons_template_data = $this->service->assign_icons_to_template($row['topic_id'], $row['topic_id'], $topic_icons, true);
+            $icons_template_data = $this->service->assign_icons_to_template($row['topic_id'], $row['icon_id'], $topic_icons, true);
             $icons_template_data = array_filter($icons_template_data, function ($data)
             {
                 return $data['S_CHECKED'];
