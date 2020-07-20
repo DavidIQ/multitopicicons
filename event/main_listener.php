@@ -30,6 +30,9 @@ class main_listener implements EventSubscriberInterface
             'core.viewtopic_modify_post_row' => 'add_topic_icons',
             'core.viewforum_modify_topics_data' => 'add_topic_icons_to_topic_list_data',
             'core.viewforum_modify_topicrow' => 'add_topic_icons_to_topic_list',
+
+            'core.acp_manage_forums_display_form' => 'acp_forum_setup',
+            'core.acp_manage_forums_validate_data' => 'acp_forum_update_data',
         ];
     }
 
@@ -44,9 +47,6 @@ class main_listener implements EventSubscriberInterface
 
     /* @var \davidiq\multitopicicons\service */
     protected $service;
-
-    /* @var array */
-    private $forum_topic_icons;
 
     /**
      * Constructor
@@ -93,6 +93,33 @@ class main_listener implements EventSubscriberInterface
             $this->service->assign_icons_to_template($topic_id, $icon_id);
             $event['page_data'] = $page_data;
         }
+    }
+
+    /**
+     * ACP forum setup
+     *
+     * @param \phpbb\event\data $event Event object
+     */
+    public function acp_forum_setup($event)
+    {
+        $this->language->add_lang('acp', 'davidiq/multitopicicons');
+
+        $template_data = $event['template_data'];
+        $forum_data = $event['forum_data'];
+        $template_data['MAX_TOPIC_ICONS'] = $forum_data['max_topic_icons'];
+        $event['template_data'] = $template_data;
+    }
+
+    /**
+     * Update forum data to include max topic icons
+     *
+     * @param $event
+     */
+    public function acp_forum_update_data($event)
+    {
+        $forum_data = $event['forum_data'];
+        $forum_data['max_topic_icons'] = $this->request->variable('max_topic_icons', 0);
+        $event['forum_data'] = $forum_data;
     }
 
     /**

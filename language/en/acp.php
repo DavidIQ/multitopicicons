@@ -35,6 +35,6 @@ if (empty($lang) || !is_array($lang))
 //
 
 $lang = array_merge($lang, [
-'MAX_TOPIC_ICONS'		        => 'Max number of topic icons',
+    'MAX_TOPIC_ICONS'	        => 'Max number of topic icons',
     'MAX_TOPIC_ICONS_EXPLAIN'   => 'Limit the number of topic icons that can be selected. Set to 0 for unlimited.',
 ]);
