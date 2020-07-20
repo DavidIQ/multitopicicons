@@ -35,5 +35,6 @@ if (empty($lang) || !is_array($lang))
 //
 
 $lang = array_merge($lang, [
-	'ICONS'		=> 'Topic icons',
+	'ICONS'		            => 'Topic icons',
+    'MAX_TOPIC_ICONS_ERROR' => 'The maximum number of allowed topic icons for this forum is %s.',
 ]);

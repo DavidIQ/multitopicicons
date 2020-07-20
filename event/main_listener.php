@@ -83,43 +83,18 @@ class main_listener implements EventSubscriberInterface
 
             $topic_id = (int)$event['topic_id'];
             $icon_id = 0;
+            $post_data = $event['post_data'];
+            $topic_icons = $this->request->variable('topic_icons', [0]);
 
             if ($topic_id)
             {
-                $post_data = $event['post_data'];
                 $icon_id = (int)$post_data['icon_id'];
             }
 
-            $this->service->assign_icons_to_template($topic_id, $icon_id);
+            $this->service->assign_icons_to_template($topic_id, $icon_id, $topic_icons);
+            $page_data['S_MAX_TOPIC_ICONS'] = $post_data['max_topic_icons'];
             $event['page_data'] = $page_data;
         }
-    }
-
-    /**
-     * ACP forum setup
-     *
-     * @param \phpbb\event\data $event Event object
-     */
-    public function acp_forum_setup($event)
-    {
-        $this->language->add_lang('acp', 'davidiq/multitopicicons');
-
-        $template_data = $event['template_data'];
-        $forum_data = $event['forum_data'];
-        $template_data['MAX_TOPIC_ICONS'] = $forum_data['max_topic_icons'];
-        $event['template_data'] = $template_data;
-    }
-
-    /**
-     * Update forum data to include max topic icons
-     *
-     * @param $event
-     */
-    public function acp_forum_update_data($event)
-    {
-        $forum_data = $event['forum_data'];
-        $forum_data['max_topic_icons'] = $this->request->variable('max_topic_icons', 0);
-        $event['forum_data'] = $forum_data;
     }
 
     /**
@@ -131,6 +106,15 @@ class main_listener implements EventSubscriberInterface
     {
         // Check for max allowed icons
         $post_data = $event['post_data'];
+        $max_topic_icons = (int)$post_data['max_topic_icons'];
+        $topic_icons = $this->request->variable('topic_icons', [0]);
+        if ($max_topic_icons > 0 && count($topic_icons) > $max_topic_icons)
+        {
+            $this->language->add_lang('posting', 'davidiq/multitopicicons');
+            $error = $event['error'];
+            $error[] = $this->language->lang('MAX_TOPIC_ICONS_ERROR', $max_topic_icons);
+            $event['error'] = $error;
+        }
     }
 
     /**
@@ -153,7 +137,7 @@ class main_listener implements EventSubscriberInterface
     public function add_topic_icons($event)
     {
         $post_row = $event['post_row'];
-        if ($post_row['S_FIRST_POST'] && !empty($post_row['POST_ICON_IMG']))
+        if ($post_row['S_FIRST_POST'])
         {
             $post_row['POST_ICON_IMG'] = false;
             $event['post_row'] = $post_row;
@@ -182,7 +166,10 @@ class main_listener implements EventSubscriberInterface
             });
             if (!empty($topic_icons))
             {
-                $topic_icons = array_map(function($icon) { return $icon['icon_id']; }, $topic_icons);
+                $topic_icons = array_map(function ($icon)
+                {
+                    return $icon['icon_id'];
+                }, $topic_icons);
                 if (!in_array($icon_id, $topic_icons))
                 {
                     $topic_icons = array_merge($topic_icons, [$icon_id]);
@@ -206,12 +193,40 @@ class main_listener implements EventSubscriberInterface
         if (!empty($topic_icons))
         {
             $topic_row['TOPIC_ICON_IMG'] = false;
-
             $icons_template_data = $this->service->assign_icons_to_template($row['topic_id'], $row['topic_id'], $topic_icons, true);
-            $icons_template_data = array_filter($icons_template_data, function($data) { return $data['S_CHECKED']; });
+            $icons_template_data = array_filter($icons_template_data, function ($data)
+            {
+                return $data['S_CHECKED'];
+            });
             $topic_row['TOPIC_ICONS'] = $icons_template_data;
-
             $event['topic_row'] = $topic_row;
         }
+    }
+
+    /**
+     * ACP forum setup
+     *
+     * @param \phpbb\event\data $event Event object
+     */
+    public function acp_forum_setup($event)
+    {
+        $this->language->add_lang('acp', 'davidiq/multitopicicons');
+
+        $template_data = $event['template_data'];
+        $forum_data = $event['forum_data'];
+        $template_data['MAX_TOPIC_ICONS'] = $forum_data['max_topic_icons'];
+        $event['template_data'] = $template_data;
+    }
+
+    /**
+     * Update forum data to include max topic icons
+     *
+     * @param $event
+     */
+    public function acp_forum_update_data($event)
+    {
+        $forum_data = $event['forum_data'];
+        $forum_data['max_topic_icons'] = $this->request->variable('max_topic_icons', 0);
+        $event['forum_data'] = $forum_data;
     }
 }
